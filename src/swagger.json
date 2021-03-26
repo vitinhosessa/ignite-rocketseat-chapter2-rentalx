@@ -35,7 +35,7 @@
             }
           }
         },
-        "reponses":{
+        "responses":{
           "201":{
             "description": "Created"
           },
@@ -85,7 +85,7 @@
             }
           }
         },
-        "reponses":{
+        "responses":{
           "201":{
             "description":"Created"
           }
@@ -106,7 +106,7 @@
             }
           }
         },
-        "reponses":{
+        "responses":{
           "201":{
             "description":"Created"
           },
