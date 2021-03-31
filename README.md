@@ -1,13 +1,11 @@
 # Cadastro de Carro
 **Req Funcionais**
 Deve ser possivel cadastrar um novo carro.
-Deve ser possivel listar todas as categorias.
 
 **Regra de Negocio**
 Não deve ser possivel cadastrar um carro com uma placa existente.
-Não deve ser possivel alterar a placa de um carro ja cadastrado.
 O carro deve ser cadastrado com disponibilidade true por padrão.
-Apenas administradores podem cadastrar carros.
+*Apenas administradores podem cadastrar carros.
 
 
 # Listagem de Carros
