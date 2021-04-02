@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 import { RentalsRepositoryInMemory } from "@modules/rentals/repositories/in-memory/RentalsRepositoryInMemory";
 import { AppError } from "@shared/errors/AppError";
 
@@ -7,6 +9,8 @@ let createRentalUseCase: CreateRentalUseCase;
 let rentalsRepositoryInMemory: RentalsRepositoryInMemory;
 
 describe("Create Rental", () => {
+  const dateAdd24Hours = dayjs().add(1, "day").toDate();
+
   beforeEach(() => {
     rentalsRepositoryInMemory = new RentalsRepositoryInMemory();
     createRentalUseCase = new CreateRentalUseCase(rentalsRepositoryInMemory);
@@ -16,7 +20,7 @@ describe("Create Rental", () => {
     const rental = await createRentalUseCase.execute({
       car_id: "12345",
       user_id: "54321a",
-      expected_return_date: new Date(),
+      expected_return_date: dateAdd24Hours,
     });
 
     expect(rental).toHaveProperty("id");
@@ -28,13 +32,13 @@ describe("Create Rental", () => {
       await createRentalUseCase.execute({
         car_id: "12345",
         user_id: "54321a",
-        expected_return_date: new Date(),
+        expected_return_date: dateAdd24Hours,
       });
 
       await createRentalUseCase.execute({
         car_id: "12345",
         user_id: "54321a",
-        expected_return_date: new Date(),
+        expected_return_date: dateAdd24Hours,
       });
     }).rejects.toBeInstanceOf(AppError);
   });
@@ -44,13 +48,24 @@ describe("Create Rental", () => {
       await createRentalUseCase.execute({
         car_id: "test",
         user_id: "123",
-        expected_return_date: new Date(),
+        expected_return_date: dateAdd24Hours,
       });
 
       await createRentalUseCase.execute({
         car_id: "test",
         user_id: "321",
-        expected_return_date: new Date(),
+        expected_return_date: dateAdd24Hours,
+      });
+    }).rejects.toBeInstanceOf(AppError);
+  });
+
+  it("should not be able to create a new rental with less then 21 hours rental time", async () => {
+    expect(async () => {
+      const dateAdd12Hours = dayjs().add(12, "hour").toDate();
+      await createRentalUseCase.execute({
+        car_id: "test",
+        user_id: "123",
+        expected_return_date: dateAdd12Hours,
       });
     }).rejects.toBeInstanceOf(AppError);
   });
