@@ -9,8 +9,9 @@ import { AppError } from "@shared/errors/AppError";
 @injectable()
 class CreateRentalUseCase {
   constructor(
-    @inject("CarsRepository")
+    @inject("RentalsRepository")
     private rentalRepository: IRentalsRepository,
+    @inject("DayjsDateProvider")
     private dateProvider: IDateProvider
   ) {}
 
