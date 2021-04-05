@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from "uuid";
+
 import { ICreateCarDTO } from "@modules/cars/dtos/ICreateCarDTO";
 import { Car } from "@modules/cars/infra/typeorm/entities/Car";
 
@@ -26,7 +28,7 @@ class CarsRepositoryInMemory implements ICarsRepository {
       daily_rate,
       fine_amount,
       license_plate,
-      id,
+      id: id || uuidv4(),
     });
 
     this.cars.push(car);
@@ -60,6 +62,11 @@ class CarsRepositoryInMemory implements ICarsRepository {
 
   async findByID(car_id: string): Promise<Car> {
     return this.cars.find((car) => car.id === car_id);
+  }
+
+  async updateAvailable(id: string, available: boolean): Promise<void> {
+    const carIndex = this.cars.findIndex((car) => car.id === id);
+    this.cars[carIndex].available = available;
   }
 }
 export { CarsRepositoryInMemory };
