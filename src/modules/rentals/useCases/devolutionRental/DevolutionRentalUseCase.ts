@@ -10,19 +10,20 @@ import { AppError } from "@shared/errors/AppError";
 @injectable()
 class DevolutionRentalUseCase {
   constructor(
-    @inject("RentalsRepositorys")
+    @inject("RentalsRepository")
     private rentalsRepository: IRentalsRepository,
-    @inject("CarsImageRepository")
+    @inject("CarsRepository")
     private carsRepository: ICarsRepository,
     @inject("DayjsDateProvider")
     private dateProvider: IDateProvider
   ) {}
-  async execute({ car_id, rental_id }: IDevolutionRentalDTO): Promise<Rental> {
+  async execute({ user_id, rental_id }: IDevolutionRentalDTO): Promise<Rental> {
     const minimumDaily = 1;
-    const rental = await this.rentalsRepository.findByID(rental_id);
-    const car = await this.carsRepository.findByID(car_id);
 
+    const rental = await this.rentalsRepository.findByID(rental_id);
     if (!rental) throw new AppError("Rental does not exists!");
+
+    const car = await this.carsRepository.findByID(rental.car_id);
 
     const dateNow = this.dateProvider.dateNow();
 
@@ -37,7 +38,7 @@ class DevolutionRentalUseCase {
 
     let total = 0;
 
-    if (delay > 0) {
+    if (delay < 0) {
       const calculateFine = delay * car.fine_amount;
       total = calculateFine;
     }
@@ -47,8 +48,8 @@ class DevolutionRentalUseCase {
     rental.end_date = dateNow;
     rental.total = total;
 
-    this.rentalsRepository.create(rental);
-    this.carsRepository.updateAvailable(car.id, true);
+    await this.rentalsRepository.create(rental);
+    await this.carsRepository.updateAvailable(car.id, true);
 
     return rental;
   }
