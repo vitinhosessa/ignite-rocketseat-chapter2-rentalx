@@ -32,10 +32,14 @@ class UsersTokensRepository implements IUsersTokensRepository {
     user_id: string,
     refreshToken: string
   ): Promise<UserTokens> {
-    const userToken = await this.repository.findOne({
-      user_id,
-      refresh_token: refreshToken,
-    });
+    const userToken = await this.repository
+      .createQueryBuilder()
+      .where("user_id = :user_id", { user_id })
+      .andWhere("refresh_token = :refresh_token", {
+        refresh_token: refreshToken,
+      })
+      .getOne();
+
     return userToken;
   }
 
