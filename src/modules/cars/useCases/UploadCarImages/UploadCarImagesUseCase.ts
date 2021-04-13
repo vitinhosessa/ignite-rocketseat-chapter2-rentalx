@@ -1,7 +1,7 @@
 import { inject, injectable } from "tsyringe";
 
 import { ICarsImagesRepository } from "@modules/cars/repositories/ICarsImagesRepository";
-import { deleteFile } from "@utils/file";
+import { IStorageProvider } from "@shared/container/providers/StorageProvider/IStorageProvider";
 
 interface IRequest {
   car_id: string;
@@ -13,21 +13,21 @@ class UploadCarImagesUseCase {
   constructor(
     @inject("CarsImageRepository")
     private carsImagesRepository: ICarsImagesRepository,
-
-    @inject("CarsImageRepository")
-    private carsImageRepository: ICarsImagesRepository
+    @inject("StorageProvider")
+    private storageProvider: IStorageProvider
   ) {}
 
   async execute({ car_id, images_name }: IRequest): Promise<void> {
-    const carImages = await this.carsImageRepository.findByCarID(car_id);
+    const carImages = await this.carsImagesRepository.findByCarID(car_id);
 
     carImages.map(async (car_image) => {
       if (car_image.image_name)
-        await deleteFile(`./tmp/cars/${car_image.image_name}`);
+        await this.storageProvider.delete(car_image.image_name, "cars");
     });
 
     images_name.map(async (image) => {
       await this.carsImagesRepository.create(car_id, image);
+      await this.storageProvider.save(image, "cars");
     });
   }
 }
